@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+  <title>级联下拉框</title>
+  <style>
+    pre {tab-size: 2; max-height: 360px;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>级联下拉框</h2>
+    <hr>
+
+    <p>下文中所使用的 <code>testData</code> 数据如下：</p>
+    <pre id="testData"></pre>
+
+    <hr>
+
+    <div class="form-group form-inline">
+      <label>初始展示：</label>
+      <select class="form-control" id="type"></select>
+    </div>
+    <small class="help-block">通过设置 <code>onChanged</code> 方法可监听每次下拉框的 change 事件</small>
+<pre>
+new ChainSelect({
+  el: '#type',
+  onChanged: function(value, curData, $select) {
+    // value 当前下拉框的值
+    // $select 当前下拉框 jquery 对象
+    console.log(value, curData, $select)
+  },
+  data: testData
+});
+</pre>
+
+    <hr>
+
+    <div class="form-group form-inline">
+      <label>自定义样式：</label>
+      <select class="form-control input-sm" id="type1"></select>
+      <code>class="form-control input-sm"</code>
+    </div>
+    <small class="help-block">可以为初始的 select 设置好样式，后续生成的 select 会继承其样式</small>
+<pre>
+new ChainSelect({
+  el: '#type1',
+  data: testData
+});
+</pre>
+
+    <hr>
+
+    <div class="form-group form-inline">
+      <label>初始化赋值：</label>
+      <select class="form-control" id="type2"></select>
+    </div>
+    <small class="help-block">通过设置 <code>values</code> 属性来初始化赋值</small>
+<pre>
+  new ChainSelect({
+    el: '#type2',
+    values: ['component', 'basic', 'icon', 'svg'],  // 依次为各个下拉框的值			
+    data: testData
+  });
+</pre>
+
+    <hr>		
+      
+    <div class="form-group form-inline">
+      <label>通过 js 赋值：
+        <!-- <button class="btn btn-primary">js 赋值</button> -->
+      </label>
+      <select class="form-control" id="type3"></select>
+      <button class="btn btn-primary">js 赋值</button>
+    </div>
+    <small class="help-block">使用 <code>setValues</code> 方法来动态赋值</small>
+<pre>
+var select = new ChainSelect({
+  el: '#type3',
+  data: testData
+});
+
+// js 赋值
+$('.btn-primary').click(function() {
+  select.setValues(['guide', 'daohang', 'dingbudaohang']);
+});
+</pre>
+
+    <hr>
+    
+    <p><a class="btn btn-success" href="test.html#alias">去看看自定义字段名</a></p>
+    <p><a class="btn btn-success" href="test.html#bigData">去看看大数据(上万个节点)</a></p>
+  </div>
+
+  <script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="./chain-select.js"></script>
+  <script>
+    var testData = [
+      {
+        value: 'guide',  // option 的 value 值
+        label: '指南',  // option 的文本
+        name: 'class1',  // select 的 name 值
+        children: [
+          {
+            value: 'shejiyuanze',
+            label: '设计原则',
+            name: 'class2',
+            children: [
+              {
+                value: 'yizhi',
+                label: '一致',
+                name: 'class3'
+              }, {
+                value: 'fankui',
+                label: '反馈',
+                name: 'class3'
+              }, {
+                value: 'xiaolv',
+                label: '效率',
+                name: 'class3'
+              }, {
+                value: 'kekong',
+                label: '可控',
+                name: 'class3'
+              }
+            ]
+          }, {
+            value: 'daohang',
+            label: '导航',
+            name: 'class2',
+            children: [
+              {
+                value: 'cexiangdaohang',
+                label: '侧向导航',
+                name: 'class3'
+              }, {
+                value: 'dingbudaohang',
+                label: '顶部导航',
+                name: 'class3'
+              }
+            ]
+          }
+        ]
+      }, {
+        value: 'component',
+        label: '组件',
+        name: 'class1',
+        children: [
+          {
+            value: 'basic',
+            label: 'Basic',
+            name: 'class2',
+            children: [
+              {
+                value: 'layout',
+                label: 'Layout 布局',
+                name: 'class3'
+              }, {
+                value: 'color',
+                label: 'Color 色彩',
+                name: 'class3'
+              }, {
+                value: 'typography',
+                label: 'Typography 字体',
+                name: 'class3'
+              }, {
+                value: 'icon',
+                label: 'Icon 图标',
+                name: 'class3',
+                children: [
+                  {
+                    value: 'png',
+                    label: 'PNG 图标',
+                    name: 'class4'
+                  }, {
+                    value: 'svg',
+                    label: 'SVG 图标',
+                    name: 'class4'
+                  }, {
+                    value: 'iconfont',
+                    label: 'iconfont',
+                    name: 'class4'
+                  }										
+                ]
+              }, {
+                value: 'button',
+                label: 'Button 按钮',
+                name: 'class3'
+              }
+            ]
+          }, {
+            value: 'form',
+            label: 'Form',
+            name: 'class2',
+            children: [
+              {
+                value: 'radio',
+                label: 'Radio 单选框',
+                name: 'class3'
+              }, {
+                value: 'checkbox',
+                label: 'Checkbox 多选框',
+                name: 'class3'
+              }, {
+                value: 'input',
+                label: 'Input 输入框',
+                name: 'class3'
+              }, {
+                value: 'input-number',
+                label: 'InputNumber 计数器',
+                name: 'class3'
+              }, {
+                value: 'select',
+                label: 'Select 选择器',
+                name: 'class3'
+              }, {
+                value: 'chainSelect',
+                label: 'chainSelect 级联选择器',
+                name: 'class3'
+              }, {
+                value: 'switch',
+                label: 'Switch 开关',
+                name: 'class3'
+              }, {
+                value: 'slider',
+                label: 'Slider 滑块',
+                name: 'class3'
+              }, {
+                value: 'time-picker',
+                label: 'TimePicker 时间选择器',
+                name: 'class3'
+              }, {
+                value: 'date-picker',
+                label: 'DatePicker 日期选择器',
+                name: 'class3'
+              }, {
+                value: 'datetime-picker',
+                label: 'DateTimePicker 日期时间选择器',
+                name: 'class3'
+              }, {
+                value: 'upload',
+                label: 'Upload 上传',
+                name: 'class3'
+              }, {
+                value: 'rate',
+                label: 'Rate 评分',
+                name: 'class3'
+              }, {
+                value: 'form',
+                label: 'Form 表单',
+                name: 'class3'
+              }
+            ]
+          }, {
+              value: 'data',
+              label: 'Data',
+              name: 'class2',
+              children: [
+                {
+                  value: 'table',
+                  label: 'Table 表格',
+                  name: 'class3',
+                }, {
+                  value: 'tag',
+                  label: 'Tag 标签',
+                  name: 'class3',
+                }, {
+                  value: 'progress',
+                  label: 'Progress 进度条',
+                  name: 'class3',
+                }, {
+                  value: 'tree',
+                  label: 'Tree 树形控件',
+                  name: 'class3',
+                }, {
+                  value: 'pagination',
+                  label: 'Pagination 分页',
+                  name: 'class3',
+                }, {
+                  value: 'badge',
+                  label: 'Badge 标记',
+                  name: 'class3',
+                }
+              ]
+          }, {
+            value: 'notice',
+            label: 'Notice',
+            name: 'class2',
+            children: [
+              {
+                value: 'alert',
+                label: 'Alert 警告',
+                name: 'class3'
+              }, {
+                value: 'loading',
+                label: 'Loading 加载',
+                name: 'class3'
+              }, {
+                value: 'message',
+                label: 'Message 消息提示',
+                name: 'class3'
+              }, {
+                value: 'message-box',
+                label: 'MessageBox 弹框',
+                name: 'class3'
+              }, {
+                value: 'notification',
+                label: 'Notification 通知',
+                name: 'class3'
+              }
+            ]
+          }, {
+            value: 'navigation',
+            label: 'Navigation',
+            name: 'class2',
+            children: [
+              {
+                value: 'menu',
+                label: 'NavMenu 导航菜单',
+                name: 'class3'
+              }, {
+                value: 'tabs',
+                label: 'Tabs 标签页',
+                name: 'class3'
+              }, {
+                value: 'breadcrumb',
+                label: 'Breadcrumb 面包屑',
+                name: 'class3'
+              }, {
+                value: 'dropdown',
+                label: 'Dropdown 下拉菜单',
+                name: 'class3'
+              }, {
+                value: 'steps',
+                label: 'Steps 步骤条',
+                name: 'class3'
+              }
+            ]
+          }, {
+            value: 'others',
+            label: 'Others',
+            name: 'class2',
+            children: [
+              {
+                value: 'dialog',
+                label: 'Dialog 对话框',
+                name: 'class3'
+              }, {
+                value: 'tooltip',
+                label: 'Tooltip 文字提示',
+                name: 'class3'
+              }, {
+                value: 'popover',
+                label: 'Popover 弹出框',
+                name: 'class3'
+              }, {
+                value: 'card',
+                label: 'Card 卡片',
+                name: 'class3'
+              }, {
+                value: 'carousel',
+                label: 'Carousel 走马灯',
+                name: 'class3'
+              }, {
+                value: 'collapse',
+                label: 'Collapse 折叠面板',
+                name: 'class3'
+              }
+            ]
+          }
+        ]
+      }, {
+        value: 'resource',
+        label: '资源',
+        name: 'class1',
+        children: [
+          {
+            value: 'axure',
+            label: 'Axure Components',
+            name: 'class2'
+          }, {
+            value: 'sketch',
+            label: 'Sketch Templates',
+            name: 'class2'
+          }, {
+            value: 'jiaohu',
+            label: '组件交互文档',
+            name: 'class2'
+          }
+        ]
+      }
+    ];
+    
+    $('#testData').html(JSON.stringify(testData, null, 2));
+
+    new ChainSelect({
+      el: '#type',
+      onChanged: selectChange,
+      data: testData
+    });
+
+    // // 监听 onchanged 事件
+    function selectChange(value, data, $this) {
+      console.log(value, data, $this)
+    }
+
+    new ChainSelect({
+      el: '#type1',
+      className: 'form-control input-sm',
+      data: testData
+    });
+
+    new ChainSelect({
+      el: '#type2',
+      values: ['component', 'basic', 'icon', 'svg'],  // 初始化赋值			
+      data: testData
+    });
+
+    var select = new ChainSelect({
+      el: '#type3',
+      data: testData
+    });
+
+    // js 赋值
+    $('.btn-primary').click(function() {
+      select.setValues(['guide', 'daohang', 'dingbudaohang']);
+    });
+  </script>
+</body>
+</html>

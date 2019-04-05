@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+  <title>级联下拉框</title>
+  <style>
+    pre {tab-size: 2; max-height: 360px;}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>级联下拉框</h2>
+    <hr>
+
+    <div class="form-group form-inline">
+      <label id="alias">自定义字段：</label>
+      <select class="form-control" id="select1"></select>
+    </div>
+    <small class="help-block">通过设置 <code>alias</code> 来自定义字段名（覆盖缺省配置）</small>
+<pre>
+new ChainSelect({
+  el: '#select1',
+  alias: {
+    value: 'id',
+    label: 'info.name',
+    name: 'info.type',
+    children: 'items'
+  },
+  data: testData1
+});
+</pre>
+    <p>本例所使用的 <code>testData1</code> 数据如下：</p>
+    <pre id="testData1"></pre>
+
+    <hr>
+
+    <div class="form-group form-inline">
+      <label>大数据(上万个节点)：</label>
+      <select class="form-control" id="select2">
+        <option>loading...</option>
+      </select>
+      <button class="btn btn-primary" disabled>js 赋值</button>
+    </div>
+    <small class="help-block">建议使用异步加载数据，加载完成后再赋值给组件</small>
+<pre>
+var select2;
+
+$.getJSON('./test-data.json', function(res) {
+  select2 = new ChainSelect({
+    el: '#type',
+    alias: {
+      value: 'info.areaCode',
+      label: 'info.areaName',
+      children: 'subs'
+    },
+    data: res
+  });
+
+  // JS 赋值
+  $('.btn-primary').prop('disabled', false).click(function() {
+    // 中国 广东 东莞 市辖区
+    select2.setValues(['CN', 'CN-440000', 'CN-441900', 'CN-441901']);
+  });
+});
+</pre>
+    <p>本例所使用的大数据样本如下：</p>
+    <pre id="testData2">loading...</pre>
+    </div>
+  </div>
+
+  <script src="http://apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="./chain-select.js"></script>
+  <script>
+    var testData1 = [
+      {
+        id: 1,
+        info: {
+          type: 'mainMode',
+          name: '安全模式'
+        },
+        items: [
+          {
+            id: 11,
+            info: {
+              type: 'subMode',
+              name: '带命令提示符的安全模式'
+            },
+            items: [
+              {
+                id: 111,
+                info: {
+                  type: 'lastMode',
+                  name: 'git bash'
+                }
+              }, {
+                id: 112,
+                info: {
+                  type: 'lastMode',
+                  name: 'windows cmd'
+                }
+              }
+            ]
+          }, {
+            id: 12,
+            info: {
+              type: 'subMode',
+              name: '带网络连接的安全模式'
+            }
+          }
+        ]
+      }, {
+        id: 2,
+        info: {
+          type: 'mainMode',
+          name: '最后一次正确配置'
+        }
+      }
+    ];
+
+    $('#testData1').html(JSON.stringify(testData1, null, 2));
+
+    new ChainSelect({
+      el: '#select1',
+      alias: {
+        value: 'id',
+        label: 'info.name',
+        name: 'info.type',
+        children: 'items'
+      },
+      data: testData1
+    });
+
+    var select2;
+
+    $.getJSON('./test-data.json', function(res) {
+      $('#testData2').html(JSON.stringify(res, null, 2));
+
+      select2 = new ChainSelect({
+        el: '#select2',
+        alias: {
+          value: 'info.areaCode',
+          label: 'info.areaName',
+          children: 'subs'
+        },
+        data: res
+      });
+
+      $('.btn-primary').prop('disabled', false).click(function() {
+        // 中国 广东 东莞 市辖区
+        select2.setValues(['CN', 'CN-440000', 'CN-441900', 'CN-441901']);
+      });
+    });
+  </script>
+</body>
+</html>
