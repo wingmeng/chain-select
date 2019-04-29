@@ -48,139 +48,140 @@
       }).bind(this)
     }
   };
-  var chainSelectProto = ChainSelect.prototype;
 
-  // 设置各个 select 的缺省值
-  chainSelectProto.setDefaultValues = function(values) {
-    var that = this;
-    var $parent = this.$parent;
+  ChainSelect.prototype = {
+    // 设置各个 select 的缺省值
+    setDefaultValues: function(values) {
+      var that = this;
+      var $parent = this.$parent;
 
-    if (Array.isArray(values)) {
-      values.forEach(function(value, idx) {
-        var curSelect = $parent.children('select').eq(idx);
-        that.cache = that.getCurListData(value, idx, that.data);
+      if (Array.isArray(values)) {
+        values.forEach(function(value, idx) {
+          var curSelect = $parent.children('select').eq(idx);
+          that.cache = that.getCurListData(value, idx, that.data);
 
-        that.showNext(idx + 1);
-        curSelect.val(value);
-      });
-    }
-  }
+          that.showNext(idx + 1);
+          curSelect.val(value);
+        });
+      }
+    },
 
-  // 获取当前 select value 值对应的数据（当前所有 option）
-  chainSelectProto.getCurListData = function(value, level, data) {
-    if (!data) {
-      return {};
-    }
-
-    var alias = this.alias;
-    var queue = [].concat(data);  // 使用数组模拟队列
-
-    // 广度遍历对象
-    while(queue.length !== 0) {
-      var children;
-
-      data = queue.shift();  // 取出队列第一顶
-
-      // 值相等且层级相同即刻返回（不同层级相同 value 的情况）
-      // 注：'1' == 1
-      if (getChainObjData(data, alias.value) == value && data._level === level) {
-        return data;
+    // 获取当前 select value 值对应的数据（当前所有 option）
+    getCurListData: function(value, level, data) {
+      if (!data) {
+        return {};
       }
 
-      children = getChainObjData(data, alias.children);
+      var alias = this.alias;
+      var queue = [].concat(data);  // 使用数组模拟队列
 
-      // 将子级加入遍历队列
-      if (children) {
-        queue = queue.concat(children);
+      // 广度遍历对象
+      while(queue.length !== 0) {
+        var children;
+
+        data = queue.shift();  // 取出队列第一顶
+
+        // 值相等且层级相同即刻返回（不同层级相同 value 的情况）
+        // 注：'1' == 1
+        if (getChainObjData(data, alias.value) == value && data._level === level) {
+          return data;
+        }
+
+        children = getChainObjData(data, alias.children);
+
+        // 将子级加入遍历队列
+        if (children) {
+          queue = queue.concat(children);
+        }
       }
-    }
-  }
+    },
 
-  // 绑定事件
-  chainSelectProto.bindEvt = function() {
-    var that = this;
-    var cb = this.onChanged;
-    
-    this.$el.parent()
-      .on('change', 'select', function() {
-        var value = $(this).val();
-        var level = Number($(this).data('level'));
-        that.cache = that.getCurListData(value, level, that.data);
+    // 绑定事件
+    bindEvt: function() {
+      var that = this;
+      var cb = this.onChanged;
+      
+      this.$el.parent()
+        .on('change', 'select', function() {
+          var value = $(this).val();
+          var level = Number($(this).data('level'));
+          that.cache = that.getCurListData(value, level, that.data);
 
-        // 移除后续所有 select
-        $(this).nextAll('select').remove();
+          // 移除后续所有 select
+          $(this).nextAll('select').remove();
 
-        if (value !== that.prompt) {
-          that.showNext(level + 1);
-        }
+          if (value !== that.prompt) {
+            that.showNext(level + 1);
+          }
 
-        if (typeof cb === 'function') {
-          cb(value, that.cache, $(this));
-        }
-      });
-  }
+          if (typeof cb === 'function') {
+            cb(value, that.cache, $(this));
+          }
+        });
+    },
 
-  // 显示下一个 select（如有）
-  chainSelectProto.showNext = function(level) {
-    var nextListData = getChainObjData(this.cache, this.alias.children);
+    // 显示下一个 select（如有）
+    showNext: function(level) {
+      var nextListData = getChainObjData(this.cache, this.alias.children);
 
-    if (nextListData && nextListData.length) {
-      this.$parent.children('select[data-level]:last')
-        .after(this.render(nextListData, level));
-    }
-  }
+      if (nextListData && nextListData.length) {
+        this.$parent.children('select[data-level]:last')
+          .after(this.render(nextListData, level));
+      }
+    },
 
-  // 渲染 view
-  chainSelectProto.render = function(options, level) {
-    var html = '';
-    var name = getChainObjData(options[0], this.alias.name);
+    // 渲染 view
+    render: function(options, level) {
+      var html = '';
+      var name = getChainObjData(options[0], this.alias.name);
 
-    if (level) {
+      if (level) {
+        html += (
+          ' <select class="' + this.className + '" ' +
+            'data-level="' + level + '"' +
+            (name ? ' name="' + name + '"' : '') +
+          '>'
+        );
+      }
+
+      html += this.builder(options);
+
+      if (!level) {
+        this.$el
+          .attr('data-level', 0)
+          .prop('name', name)
+          .html(html);
+      } else {
+        html += '</select>';
+        this.$parent.children('select:last').after(html);
+      }
+    },
+
+    // 构建 select 的 options
+    builder: function(options) {
+      var html = '';
+      var alias = this.alias;
+
+      if (this.prompt) {
+        html += '<option>' + this.prompt + '</option>';
+      }
+
       html += (
-        ' <select class="' + this.className + '" ' +
-          'data-level="' + level + '"' +
-          (name ? ' name="' + name + '"' : '') +
-        '>'
+        options.map(function(option) {
+          var value = getChainObjData(option, alias.value) || '';
+          var label = getChainObjData(option, alias.label);
+
+          // 如果 label 不存在，则使用 value 代替
+          if (typeof label === 'undefined') {
+            label = value;
+          }
+
+          return '<option value="' + value + '">' + label + '</option>';
+        }).join('')
       );
+
+      return html;
     }
-
-    html += this.builder(options);
-
-    if (!level) {
-      this.$el
-        .attr('data-level', 0)
-        .prop('name', name)
-        .html(html);
-    } else {
-      html += '</select>';
-      this.$parent.children('select:last').after(html);
-    }
-  }
-
-  // 构建 select 的 options
-  chainSelectProto.builder = function(options) {
-    var html = '';
-    var alias = this.alias;
-
-    if (this.prompt) {
-      html += '<option>' + this.prompt + '</option>';
-    }
-
-    html += (
-      options.map(function(option) {
-        var value = getChainObjData(option, alias.value) || '';
-        var label = getChainObjData(option, alias.label);
-
-        // 如果 label 不存在，则使用 value 代替
-        if (typeof label === 'undefined') {
-          label = value;
-        }
-
-        return '<option value="' + value + '">' + label + '</option>';
-      }).join('')
-    );
-
-    return html;
   }
 
   // 递归数组，为每项设置 level 值
