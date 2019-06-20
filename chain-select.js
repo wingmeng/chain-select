@@ -50,6 +50,8 @@
   };
 
   ChainSelect.prototype = {
+    constructor: ChainSelect,
+
     // 设置各个 select 的缺省值
     setDefaultValues: function(values) {
       var that = this;
