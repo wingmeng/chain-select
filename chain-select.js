@@ -1,4 +1,4 @@
-(function(root, factory) {
+!(function(root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(['jquery'], function($) {
       return factory($);
@@ -12,7 +12,6 @@
   var ChainSelect = function(options) {
     var opts = $.extend({}, {
       prompt: '-请选择-',
-      onChanged: null,
       data: null,
 
       // 字段名映射
@@ -28,7 +27,6 @@
     this.$parent = this.$el.parent();
     this.className = this.$el.prop('class') || '';
     this.prompt = opts.prompt;
-    this.onChanged = opts.onChanged;
     this.alias = opts.alias;
     this.cache = null;
 
@@ -39,13 +37,6 @@
       this.render(this.data);
       this.bindEvt();
       this.setDefaultValues(opts.values);
-    }
-
-    return {
-      setValues: (function(values) {
-        this.$el.nextAll('select').remove();
-        this.setDefaultValues(values);
-      }).bind(this)
     }
   };
 
@@ -101,8 +92,7 @@
     // 绑定事件
     bindEvt: function() {
       var that = this;
-      var cb = this.onChanged;
-      
+
       this.$el.parent()
         .on('change', 'select', function() {
           var value = $(this).val();
@@ -115,9 +105,9 @@
           if (value !== that.prompt) {
             that.showNext(level + 1);
           }
-
-          if (typeof cb === 'function') {
-            cb(value, that.cache, $(this));
+          
+          if (typeof that.changeCallback === 'function') {
+            that.changeCallback(value, that.cache, $(this));
           }
         });
     },
@@ -183,6 +173,15 @@
       );
 
       return html;
+    },
+
+    onChanged: function(fn) {
+      this.changeCallback = fn;
+    },
+
+    setValues: function(values) {
+      this.$el.nextAll('select').remove();
+      this.setDefaultValues(values);
     }
   }
 
