@@ -24,16 +24,16 @@
       <label>初始展示：</label>
       <select class="form-control" id="type"></select>
     </div>
-    <small class="help-block">通过设置 <code>onChanged</code> 方法可监听每次下拉框的 change 事件</small>
+    <small class="help-block">通过监听实例的 <code>onChanged</code> 方法可获取每次下拉框的 change 后的值</small>
 <pre>
-new ChainSelect({
+var chainSelect = new ChainSelect({
   el: '#type',
-  onChanged: function(value, curData, $select) {
-    // value 当前下拉框的值
-    // $select 当前下拉框 jquery 对象
-    console.log(value, curData, $select)
-  },
   data: testData
+});
+chainSelect.onChanged(function(value, curData, $select) {
+  // value 当前下拉框的值
+  // $select 当前下拉框 jquery 对象
+  console.log(value, curData, $select)
 });
 </pre>
 
@@ -396,16 +396,16 @@ $('.btn-primary').click(function() {
     
     $('#testData').html(JSON.stringify(testData, null, 2));
 
-    new ChainSelect({
+    var chainSelect = new ChainSelect({
       el: '#type',
-      onChanged: selectChange,
       data: testData
     });
 
-    // // 监听 onchanged 事件
-    function selectChange(value, data, $this) {
-      console.log(value, data, $this)
-    }
+    chainSelect.onChanged(function(value, curData, $select) {
+      // value 当前下拉框的值
+      // $select 当前下拉框 jquery 对象
+      console.log(value, curData, $select)
+    });
 
     new ChainSelect({
       el: '#type1',
